@@ -2,12 +2,9 @@ import {useNavigate, useParams} from "react-router";
 import { useEffect, useState } from "react";
 
 function DeckDetail() {
-    const { id } = useParams(); // Destructure id directly from useParams
+    const { id } = useParams();
     const [deck, setDeck] = useState(null);
     const navigate = useNavigate();
-
-    const [loading, setLoading] = useState(true); // Optional: for loading state
-    const [error, setError] = useState(null); // Optional: for error handling
 
     async function fetchDeck() {
         try {
@@ -23,28 +20,26 @@ function DeckDetail() {
             setDeck(data);
         } catch (error) {
             console.error('Er is een fout opgetreden:', error);
-            setError(error.message); // Set error message
-        } finally {
-            setLoading(false); // Set loading to false
         }
     }
 
     useEffect(() => {
         fetchDeck();
-    }, [id]); // Add id to the dependency array
+    }, [id]);
 
-    if (loading) {
-        return <p>Loading...</p>; // Show loading state
-    }
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (!deck) {
+                navigate('/deck-not-found');
+            }
+        }, 2000);
 
-    if (error) {
-        return <p>Error: {error}</p>; // Show error message
-    }
+        return () => clearTimeout(timer);
+    }, [deck, navigate]);
 
     if (!deck) {
-        return <p>No deck found.</p>; // Handle case where deck is not found
+        return <p className="text-center">Deck wordt geladen...</p>;
     }
-
     async function deleteDeck() {
         try {
             const response = await fetch(`http://145.24.223.204:8000/decks/${id}`, {
@@ -54,13 +49,9 @@ function DeckDetail() {
                 }
             });
 
-
             navigate('/decks')
         } catch (error) {
             console.error('Er is een fout opgetreden:', error);
-            setError(error.message); // Set error message
-        } finally {
-            setLoading(false); // Set loading to false
         }
     }
 
@@ -73,13 +64,50 @@ function DeckDetail() {
     }
 
     return (
-        <article className="border rounded-lg shadow-lg p-6 bg-white hover:bg-gray-50 transition duration-300">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">{deck.title}</h1>
-            <h2 className="text-lg text-gray-600 mb-4">By {deck.price}</h2>
-            <h2 className="text-gray-700">{deck.size}</h2>
-            <p className="text-gray-700">{deck.body}</p>
-            <button className="p-20" onClick={handleEdit}>EDIT</button>
-            <button onClick={handleDelete}>DELETE</button>
+        <article className="border-4 border-blue-400 rounded-3xl shadow-lg p-6 bg-gradient-to-br from-pink-100 via-yellow-100 to-blue-100 transition-all duration-300 ease-in-out max-w-lg mx-auto">
+            <h1 className="text-4xl font-extrabold text-blue-800 mb-4 tracking-wide">
+                {deck.title}
+            </h1>
+
+            <h2 className="text-2xl font-semibold text-green-700 mb-4">
+                ${deck.price}
+            </h2>
+
+            <div className="mb-6">
+                <h3 className="text-sm font-medium text-gray-700 uppercase tracking-widest">
+                    Size
+                </h3>
+                <p className="text-lg font-medium text-purple-700">{deck.size}</p>
+            </div>
+
+            <div className="w-full h-1 bg-gradient-to-r from-yellow-400 via-pink-400 to-blue-400 rounded-full my-4"></div>
+
+            <p className="text-gray-700 leading-relaxed mb-6">
+                {deck.body}
+            </p>
+
+            <a
+                href={deck.order}
+                target={"_blank"}
+                className="block bg-gradient-to-r from-pink-500 to-yellow-500 text-white font-bold text-sm px-6 py-3 rounded-full shadow-lg hover:from-pink-600 hover:to-yellow-600 hover:shadow-xl transition-transform transform hover:scale-105 text-center"
+            >
+                🛒 Order Now
+            </a>
+
+            <div className="flex justify-between items-center mt-6">
+                <button
+                    className="px-6 py-2 text-sm font-medium text-white bg-purple-500 rounded-full shadow hover:bg-purple-600 hover:shadow-md transition-transform transform hover:scale-105"
+                    onClick={handleEdit}
+                >
+                    ✏️ Edit
+                </button>
+                <button
+                    className="px-6 py-2 text-sm font-medium text-white bg-red-500 rounded-full shadow hover:bg-red-600 hover:shadow-md transition-transform transform hover:scale-105"
+                    onClick={handleDelete}
+                >
+                    ❌ Delete
+                </button>
+            </div>
         </article>
     );
 }

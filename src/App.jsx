@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import {createBrowserRouter, RouterProvider} from "react-router";
 import Layout from './Layout.jsx';
@@ -10,6 +7,8 @@ import DeckList from "./pages/DeckList.jsx";
 import CreateDeck from "./pages/CreateDeck.jsx";
 import DeckDetail from "./pages/DeckDetail.jsx";
 import EditDeck from "./pages/EditDeck.jsx";
+import PageNotFound from "./pages/PageNotFound.jsx";
+import DeckNotFound from "./pages/DeckNotFound.jsx";
 
 
 
@@ -40,6 +39,18 @@ const router = createBrowserRouter([
             {
                 path: '/deck/edit/:id',
                 element: <EditDeck/>
+            },
+            {
+                path: '/deck-not-found',
+                element: <DeckNotFound/>
+            },
+            {
+                path: '*',
+                element: <PageNotFound/>
+            },
+            {
+                path: '/decks/*',
+                element: <DeckNotFound/>
             },
         ]
     }

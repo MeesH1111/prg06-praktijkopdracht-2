@@ -8,9 +8,9 @@ function CreateDeck(onAddDeck) {
         price: '',
         size: '',
         body: '',
+        order: '',
     });
 
-    // Generieke handler voor het bijwerken van de state
     const handleInputChange = (event) => {
         const {name, value} = event.target;
         setFormData({
@@ -33,14 +33,14 @@ function CreateDeck(onAddDeck) {
                 body: JSON.stringify(formData),
 
             });
-            navigate('/decks')
             console.log(formData);
 
+            navigate('/decks')
             const newDeck = await response.json();
             onAddDeck(newDeck);
-            setFormData({ title: '', price: '', size: '', body: ''});
+            setFormData({ title: '', price: '', size: '', body: '', order: ''});
         } catch (error) {
-            console.log('ERROR:', error)
+            console.error('Er is een fout opgetreden:', error)
         }
     };
 
@@ -89,6 +89,18 @@ function CreateDeck(onAddDeck) {
                     id="body"
                     name="body"
                     value={formData.body}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500 p-2 pb-20"
+                    required
+                />
+            </div>
+            <div className="mb-4">
+                <label htmlFor="order" className="block text-sm font-medium text-gray-700">Order link:</label>
+                <input
+                    type="url"
+                    id="order"
+                    name="order"
+                    value={formData.order}
                     onChange={handleInputChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500 p-2 pb-20"
                     required

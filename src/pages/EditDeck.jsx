@@ -2,8 +2,7 @@ import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router";
 
 const EditDeck = (onUpdate) => {
-    const params = useParams()
-    const id = params.id
+    const { id } = useParams()
     const navigate = useNavigate()
     const [decks, setDecks] = useState()
     const [formData, setFormData] = useState({
@@ -11,11 +10,12 @@ const EditDeck = (onUpdate) => {
         price: '',
         size: '',
         body: '',
+        order: ''
     });
 
     useEffect(() => {
         fetchDecks()
-    });
+    }, [id]);
 
     const fetchDecks = async () => {
         try {
@@ -27,17 +27,18 @@ const EditDeck = (onUpdate) => {
             });
             const data = await response.json();
             setDecks(data.items);
-            const deckToEdit = data.items.find(deck => deck.id === parseInt(id));
+            const deckToEdit = data.items.find(deck => deck.id === id);
             if (deckToEdit) {
                 setFormData({
                     title: deckToEdit.title,
                     price: deckToEdit.price,
                     size: deckToEdit.size,
                     body: deckToEdit.body,
+                    order: deckToEdit.order
                 });
             }
         } catch (error) {
-            console.log('ERROR:', error)
+            console.error('Er is een fout opgetreden:', error)
         }
     };
 
@@ -64,9 +65,8 @@ const EditDeck = (onUpdate) => {
             if (response.ok) {
                 navigate('/decks')
                 onUpdate({ id: parseInt(id), ...formData})
-            } else {
-                console.log('ERROR')
             }
+
         } catch (error) {
             console.log(error)
         }
@@ -91,7 +91,7 @@ const EditDeck = (onUpdate) => {
             <div className="mb-4">
                 <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price:</label>
                 <input
-                    type="number"
+                    type="text"
                     id="price"
                     name="price"
                     value={formData.price}
@@ -103,7 +103,7 @@ const EditDeck = (onUpdate) => {
             <div className="mb-4">
                 <label htmlFor="size" className="block text-sm font-medium text-gray-700">Size:</label>
                 <input
-                    type="string"
+                    type="text"
                     id="size"
                     name="size"
                     value={formData.size}
@@ -119,6 +119,18 @@ const EditDeck = (onUpdate) => {
                     id="body"
                     name="body"
                     value={formData.body}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500 p-2 pb-20"
+                    required
+                />
+            </div>
+            <div className="mb-4">
+                <label htmlFor="order" className="block text-sm font-medium text-gray-700">Order link:</label>
+                <input
+                    type="url"
+                    id="order"
+                    name="order"
+                    value={formData.order}
                     onChange={handleInputChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500 p-2 pb-20"
                     required
